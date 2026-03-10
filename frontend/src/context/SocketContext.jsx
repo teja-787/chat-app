@@ -10,7 +10,7 @@ export const SocketProvider = ({ children }) => {
 
   useEffect(() => {
     if (token) {
-      const newSocket = io('http://localhost:5000', {
+      const newSocket = io('https://chat-app-production-a8e9.up.railway.app', {
   auth: { token }
       })
       setSocket(newSocket)
