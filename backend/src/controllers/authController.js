@@ -14,7 +14,7 @@ exports.register = async (req, res) => {
     const token = generateToken(user._id)
     res.status(201).json({
       token,
-      user: { id: user._id, username: user.username, email: user.email }
+      user: { id: user._id, username: user.username, email: user.email, avatarStyle: user.avatarStyle, bio: user.bio }
     })
   } catch (error) {
     res.status(500).json({ message: error.message })
@@ -32,7 +32,7 @@ exports.login = async (req, res) => {
     const token = generateToken(user._id)
     res.json({
       token,
-      user: { id: user._id, username: user.username, email: user.email }
+      user: { id: user._id, username: user.username, email: user.email, avatarStyle: user.avatarStyle, bio: user.bio }
     })
   } catch (error) {
     res.status(500).json({ message: error.message })

@@ -34,4 +34,5 @@ export default function Sidebar({ rooms, currentRoom, onJoinRoom, onCreateRoom }
       </div>
     </div>
   )
-}
+}// Avatar export for use in other components
+export { default as Avatar } from './Avatar'

@@ -4,6 +4,7 @@ import { SocketProvider } from './context/SocketContext'
 import Login from './pages/Login'
 import Register from './pages/Register'
 import Chat from './pages/Chat'
+import Profile from './pages/Profile'
 
 const PrivateRoute = ({ children }) => {
   const { user, loading } = useAuth()
@@ -21,6 +22,7 @@ const AppRoutes = () => {
       <Route path="/login" element={<Login />} />
       <Route path="/register" element={<Register />} />
       <Route path="/chat" element={<PrivateRoute><Chat /></PrivateRoute>} />
+      <Route path="/profile" element={<PrivateRoute><Profile /></PrivateRoute>} />
       <Route path="*" element={<Navigate to="/login" replace />} />
     </Routes>
   )
