@@ -6,55 +6,53 @@ module.exports = (io) => {
   io.use(async (socket, next) => {
     try {
       const token = socket.handshake.auth.token
-      if (!token) return next(new Error('No token'))
       const decoded = jwt.verify(token, process.env.JWT_SECRET)
-      socket.user = await User.findById(decoded.id).select('-password')
+      const user = await User.findById(decoded.id).select('-password')
+      socket.user = user
       next()
-    } catch (error) {
-      next(new Error('Invalid token'))
+    } catch (err) {
+      next(new Error('Authentication error'))
     }
   })
 
   io.on('connection', async (socket) => {
     console.log(`${socket.user.username} connected`)
-
     await User.findByIdAndUpdate(socket.user._id, { isOnline: true })
-    io.emit('userOnline', { userId: socket.user._id, username: socket.user.username })
 
-    socket.on('joinRoom', (roomId) => {
+    socket.on('join_room', (roomId) => {
       socket.join(roomId)
-      console.log(`${socket.user.username} joined room ${roomId}`)
     })
 
-    socket.on('leaveRoom', (roomId) => {
-      socket.leave(roomId)
-    })
-
-    socket.on('sendMessage', async ({ content, roomId }) => {
+    socket.on('send_message', async (data) => {
       try {
         const message = await Message.create({
-          content, room: roomId, sender: socket.user._id
+          content: data.content,
+          sender: socket.user._id,
+          room: data.roomId
         })
-        const populated = await message.populate('sender', 'username avatar')
-        io.to(roomId).emit('newMessage', populated)
-      } catch (error) {
-        socket.emit('error', { message: error.message })
+        const populated = await message.populate('sender', 'username avatarStyle')
+        io.to(data.roomId).emit('receive_message', populated)
+      } catch (err) {
+        console.error(err)
       }
     })
 
-    socket.on('typing', ({ roomId }) => {
-      socket.to(roomId).emit('userTyping', { username: socket.user.username })
+    socket.on('typing', (roomId) => {
+      socket.to(roomId).emit('user_typing', {
+        username: socket.user.username,
+        avatar: socket.user.avatarStyle
+      })
     })
 
-    socket.on('stopTyping', ({ roomId }) => {
-      socket.to(roomId).emit('userStopTyping', { username: socket.user.username })
+    socket.on('stop_typing', (roomId) => {
+      socket.to(roomId).emit('user_stop_typing', socket.user.username)
     })
 
     socket.on('disconnect', async () => {
       await User.findByIdAndUpdate(socket.user._id, {
-        isOnline: false, lastSeen: Date.now()
+        isOnline: false,
+        lastSeen: new Date()
       })
-      io.emit('userOffline', { userId: socket.user._id })
       console.log(`${socket.user.username} disconnected`)
     })
   })
