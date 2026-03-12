@@ -3,7 +3,7 @@ import { useAuth } from '../context/AuthContext'
 import Avatar, { getAvatarUrl, AVATAR_STYLES } from '../components/Avatar'
 import axios from 'axios'
 
-const API = 'https://chat-app-production-a8e9.up.railway.app/api'
+const API = import.meta.env.VITE_API_URL
 
 export default function Profile() {
   const { user, setUser } = useAuth()

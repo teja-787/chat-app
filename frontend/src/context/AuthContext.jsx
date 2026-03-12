@@ -3,7 +3,7 @@ import axios from 'axios'
 
 const AuthContext = createContext()
 
-const API = 'https://chat-app-production-a8e9.up.railway.app/api'
+const API = import.meta.env.VITE_API_URL
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null)

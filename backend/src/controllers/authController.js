@@ -40,5 +40,11 @@ exports.login = async (req, res) => {
 }
 
 exports.getMe = async (req, res) => {
-  res.json(req.user)
+  res.json({
+    id: req.user._id,
+    username: req.user.username,
+    email: req.user.email,
+    avatarStyle: req.user.avatarStyle,
+    bio: req.user.bio
+  })
 }
